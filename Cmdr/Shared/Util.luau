@@ -42,7 +42,12 @@ local function transformInstanceSet(instances)
 	local names = {}
 
 	for i = 1, #instances do
-		names[i] = instances[i].Name
+		local object = instances[i]
+		if typeof(object) == "Instance" and object:IsA("Player") then
+			names[i] = if object.DisplayName == object.Name then object.Name else `{object.DisplayName} ({object.Name})`
+		else
+			names[i] = object.Name or tostring(object)
+		end
 	end
 
 	return names, instances
@@ -151,12 +156,7 @@ end
 	If no Name property is present, then tostring will be called instead.
 ]=]
 function Util.GetNames(instances: any): { string }
-	local names = {}
-
-	for i = 1, #instances do
-		names[i] = instances[i].Name or tostring(instances[i])
-	end
-
+	local names, _ = transformInstanceSet(instances)
 	return names
 end
 
